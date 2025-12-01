@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Video Transcriber AI – Free & Fast</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f9fafb;
+      color: #111827;
+      line-height: 1.6;
+      padding: 50px 20px;
+    }
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    h1 { font-size: 2.4rem; margin-bottom: 12px; }
+    .subtitle { font-size: 1.1rem; color: #475569; margin-bottom: 32px; }
+    input[type="text"], input[type="file"] {
+      width: 100%; padding: 14px; margin: 8px 0;
+      border: 1px solid #cbd5e1; border-radius: 12px; font-size: 16px;
+    }
+    button {
+      background: #2563eb; color: white; border: none; border-radius: 12px;
+      padding: 14px 28px; font-size: 18px; font-weight: 600; cursor: pointer;
+    }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
+    #result {
+      width: 100%; min-height: 150px; margin-top: 20px; padding: 16px;
+      border: 1px solid #e2e8f0; border-radius: 12px; background: white;
+      text-align: left; white-space: pre-wrap; font-family: monospace;
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Video Transcriber AI</h1>
+    <p class="subtitle">
+      Turn any video into clear, accurate text in seconds. Whether it’s a YouTube lecture, a Zoom meeting, or an MP4 file, you can upload it and get a full transcript without hassle. This video to text transcriber works right in your browser, free and easy to use, perfect for study, work, or content creation.
+    </p>
+
+    <input type="text" id="youtubeUrl" placeholder="Paste YouTube URL (e.g. https://youtube.com/watch?v=...)" />
+    <input type="file" id="videoFile" accept="video/*" />
+    <button onclick="transcribe()">Transcribe Now</button>
+    <div id="status" class="hidden">Processing... This may take a while depending on video length.</div>
+    <textarea id="result" readonly placeholder="Your transcript will appear here..."></textarea>
+  </div>
+
+  <script>
+    async function transcribe() {
+      const youtubeUrl = document.getElementById('youtubeUrl').value.trim();
+      const videoFile = document.getElementById('videoFile').files[0];
+      const btn = document.querySelector('button');
+      const status = document.getElementById('status');
+      const result = document.getElementById('result');
+
+      if (!youtubeUrl && !videoFile) {
+        alert('Please enter a YouTube URL or upload a video file.');
+        return;
+      }
+
+      btn.disabled = true;
+      status.classList.remove('hidden');
+      result.value = '';
+
+      const formData = new FormData();
+      if (youtubeUrl) formData.append('youtube_url', youtubeUrl);
+      if (videoFile) formData.append('video', videoFile);
+
+      // 🔁 GANTI DENGAN URL BACKEND ANDA NANTI
+      const API_URL = "https://your-transcriber.onrender.com/transcribe";
+
+      try {
+        const res = await fetch(API_URL, { method: 'POST', body: formData });
+        const data = await res.json();
+        result.value = res.ok ? data.text || '' : '❌ Error: ' + (data.detail || 'Failed');
+      } catch (err) {
+        result.value = '❌ Network error: ' + err.message;
+      } finally {
+        btn.disabled = false;
+        status.classList.add('hidden');
+      }
+    }
+  </script>
+</body>
+</html>
